@@ -7,10 +7,28 @@ vector<string> split_string(string);
 // Complete the kangaroo function below.
 string kangaroo(int x1, int v1, int x2, int v2) {
     /*    x1 + v1n = x2 + v2n
+     *    x1 - x2 = (v2 - v1) * n
      *    (x1 - x2) % (v2 - v1) =0 : True;
      *    n : integer: True
-     *    
+     *    x2 > x1 -> v2 < v1
      * */
+    if (v1 == v2)
+    {
+        if (x1 == x2)
+            return "YES";
+        else
+            return "NO";
+    }
+        if(x1 > x2)
+    {
+        if(v1 > v2)
+            return "NO";
+    }
+    else
+    {
+        if(v2 > v1)
+            return "NO";
+    }
     if ((x1 - x2) % (v2 - v1))
         return "NO";
     else
