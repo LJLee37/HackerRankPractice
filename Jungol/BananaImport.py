@@ -1,0 +1,35 @@
+a, b, c = map(int, input().split())
+n, m = map(int, input().split())
+land = 0
+world = 0
+if a < c / b:
+    land = m - n + 1
+else:
+    i = n
+    wp = c * i // b #world price
+    if i % b != 0: #
+        wp += c
+    while i <= m:
+        if i % b == 1: # if wp gets higher
+            wp = c * (i // b + 1)
+        if c/b > a: #if velocity of wp is higher than land
+            if a * i > wp: #land price is higher than world price
+                world += m - i + 1 #rest of cases are world
+                break #and finish.
+            else:
+                land += 1
+                i += 1 #what should I do here...
+        else: #if velocity of wp is lower of equal to land
+            land += (wp - a * i) // a
+            i += (wp - a * i) // a
+        """else:
+            if (a * i > c + wp):
+                land += b - i % b + 1
+                i += b - i % b + 1
+            else:
+                world += 1
+                i += 1"""
+    if i > m + 1:
+        land -= i - m
+print(land)
+print(world)
