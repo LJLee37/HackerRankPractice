@@ -19,9 +19,9 @@ vector<string> split(const string &);
  *  2. INTEGER_ARRAY player
  */
 
-int bs(vector<int> arr, int n)
+int bs(const vector<int>& arr, int n, int bsR)
 {
-    int bsLeft = 0, bsRight = arr.size() - 1, bsCurrent = (bsLeft + bsRight) / 2;
+    int bsLeft = 0, bsRight = bsR, bsCurrent = (bsLeft + bsRight) / 2;
     while (!(n >= arr[bsCurrent] && n < arr[bsCurrent - 1]))
     {
         if (bsLeft == bsRight)
@@ -47,12 +47,30 @@ int bs(vector<int> arr, int n)
     }
     return bsCurrent;
 }
+int bsRecursive(const vector<int>& arr, const int& n)
+{
+    if (arr.size() <= 2)
+    {
+        if (arr[0] <= n)
+            return 0;
+        else
+            return 1;
+    }
+    int current = arr.size() / 2 - !(arr.size() % 2);
+    if (arr[current] >= n && n < arr[current - 1])
+        return current;
+    if (n >= arr[current])
+        return bsRecursive(vector<int>(arr.cbegin(), (arr.size() % 2) + arr.cend() - current), n);
+    else
+        return 1 + current + bsRecursive(vector<int>(arr.cbegin() + current + (arr.size() % 2) + 1, arr.cend()), n);
+}
 
 vector<int> climbingLeaderboard(vector<int> ranked, vector<int> player) {
     vector<int> retval;
     sort(ranked.begin(), ranked.end());
     ranked.erase(unique(ranked.begin(), ranked.end()), ranked.end());
     reverse(ranked.begin(), ranked.end());
+    //int prevIndex = ranked.size() - 1;
     for (auto i : player)
     {
         if (i <= ranked.back())
@@ -60,26 +78,32 @@ vector<int> climbingLeaderboard(vector<int> ranked, vector<int> player) {
             if (i != ranked.back())
                 ranked.push_back(i);
             retval.push_back(ranked.size());
+            //prevIndex = ranked.size() - 1;
             continue;
         }
         if (i >= ranked[0])
         {
             if (i != ranked[0])
-                ranked.insert(ranked.cbegin(), i);
+            {
+                ranked.clear();
+                ranked.push_back(i);
+            }
             retval.push_back(1);
+            //prevIndex = 0;
             continue;
         }
-        auto bsCurrent = bs(ranked, i);
-        if (i != ranked[bsCurrent])
+        auto bsCurrent = /*bs(ranked, i, prevIndex)*/bsRecursive(ranked, i);
+        ranked.resize(bsCurrent + 1);
+        if (i != ranked.back())
         {
-            auto it = find(ranked.begin(), ranked.end(), ranked[bsCurrent]);
-            ranked.insert(it, i);
+            ranked.pop_back();
+            ranked.push_back(i);
         }
         retval.push_back(bsCurrent + 1);
+        //prevIndex = bsCurrent;
     }
     return retval;
 }
-
 
 
 int main()
