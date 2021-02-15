@@ -13,68 +13,76 @@ import sys
 #  1. INTEGER_ARRAY ranked
 #  2. INTEGER_ARRAY player
 #
-def bs(arr, n):
-    bsLeft = 0
-    bsRight = len(arr) - 1
-    bsCurrent = (bsLeft + bsRight) // 2
-    while not (n >= arr[bsCurrent] and n < arr[bsCurrent - 1]):
-        if bsLeft == bsRight:
-            return bsLeft
-        if bsLeft > bsRight:
-            return -1
-        if bsRight - bsLeft == 1:
-            if n >= arr[bsRight] and n < arr[bsLeft]:
-                return bsRight
-            elif n >= arr[bsLeft] and n < arr[bsLeft - 1]:
-                return bsLeft
-            else:
-                return -1
-        if n == arr[bsCurrent]:
-            return bsCurrent
-        elif n >= arr[bsCurrent]:
-            bsRight = bsCurrent
+
+def search(target, li, lenli):
+    prefix = 0
+    while True:
+        if lenli <= 3:
+            for i in range(lenli):
+                if target >= li[i]:
+                    return prefix + i
+            return lenli + prefix
+        isOdd = 0
+        if lenli % 2 == 1:
+            isOdd = 1
+        #half = lenli // 2
+        median = li[lenli // 2]
+        if (target >= median and target < li[lenli // 2 - 1]):
+            return lenli // 2 + prefix
+        if target > median:
+            li = li[:lenli // 2]
+            lenli = lenli // 2
         else:
-            bsLeft = bsCurrent
-        bsCurrent = (bsLeft + bsRight) // 2
-    return bsCurrent
+            prefix += lenli // 2 + 1
+            li = li[lenli // 2 + 1:]
+            lenli = lenli // 2 - 1 + isOdd
+    """
+    #lenli = len(li)
+    if lenli <= 3:
+        for i in range(lenli):
+            if target >= li[i]:
+                return i
+        return lenli
+    isOdd = 0
+    if lenli % 2 == 1:
+        isOdd = 1
+    half = lenli // 2
+    median = li[half]
+    if (target >= median and target < li[half - 1]):
+        return half
+    if target > median:
+        return search(target, li[:half], half)
+    else:
+        return half + search(target, li[half + 1:], half - 1 + isOdd) + 1
+        """
+
 
 def climbingLeaderboard(ranked, player):
     # Write your code here
-    retval = []
     ranked = list(set(ranked))
     ranked.sort(reverse=True)
+    retval = []
+    lenran = len(ranked)
+    lenpl = len(player)
+    """
     for i in player:
-        #print(ranked)
-        #print(retval)
-        ranklen = len(ranked)
-        if i < ranked[ranklen - 1]:
-            ranked.append(i)
-            retval.append(ranklen + 1)
-            continue
-        if i == ranked[ranklen - 1]:
-            retval.append(ranklen)
-            continue
-        if i > ranked[0]:
-            ranked.insert(0, i)
-            retval.append(1)
-            continue
-        if i == ranked[0]:
-            retval.append(1)
-            continue
-        bsCurrent = bs(ranked, i)
-        if i != ranked[bsCurrent]:
-            ranked.insert(bsCurrent, i)
-        retval.append(bsCurrent + 1)
+        retval.append(1 + search(i, ranked, lenran))
+        if retval[-1] - 1 == lenran or i != ranked[retval[-1] - 1]:
+            ranked.insert(retval[-1] - 1, i)
+            lenran += 1
+    """
+    player.reverse()
+    curran = 0
+    curpl = 0
+    while curpl < lenpl and curran < lenran:
+        if player[curpl] >= ranked[curran]:
+            retval.insert(0, curran + 1)
+            curpl += 1
+        else:
+            curran += 1
+    for i in range(curpl, lenpl):
+        retval.insert(0, lenran + 1)
     return retval
-
-"""
-        for j in range(len(ranked)):
-            if i >= ranked[j]:
-                retval.append(j + 1)
-                if i != ranked[j]:
-                    ranked.insert(j, i)
-                break
-                """
 
 if __name__ == '__main__':
     #fptr = open(os.environ['OUTPUT_PATH'], 'w')
