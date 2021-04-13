@@ -24,7 +24,7 @@ def stringAnagram(dictionary, query):
     retval = []
     for i in query:
         if i in temp:
-            retval.append(i)
+            retval.append(counts[i])
         else:
             retval.append(0)
     return retval
